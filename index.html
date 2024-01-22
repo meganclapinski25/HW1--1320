@@ -131,14 +131,20 @@
                         
                         
                         
-                        ctx.beginPath();
-                        ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                        
-                        ctx.fill();
-                        ctx.closePath();
 
 
                     }
+                    if (r % 1 === 0 && c % 3 === 0){
+                        ctx.fillStyle = 'red'
+                    }else{
+                        ctx.fillStyle = 'blue'
+                    }
+
+                    ctx.beginPath();
+                    ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                        
+                    ctx.fill();
+                    ctx.closePath();
                     
                 }
             }
