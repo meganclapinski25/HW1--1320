@@ -99,7 +99,7 @@
     }
     function drawLives(){
         ctx.font = "16px Arial";
-        ctx.fillStyle = "#0095DD";
+        ctx.fillStyle = "#c99bd1";
         ctx.fillText(`Lives: ${lives}`, canvas.width -65,20);
     }
 
@@ -127,14 +127,18 @@
                         var brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
                         bricks[c][r].x = brickX;
                         bricks[c][r].y = brickY;
+                        
+                        if (r % 2 === 0){
+                            ctx.fillStyle = "black"
+                        }else{
+                            ctx.fillStyle = "white"
+                        }
+                        
                         ctx.beginPath();
                         ctx.rect(brickX, brickY, brickWidth, brickHeight);
                         
                         ctx.fill();
                         ctx.closePath();
-
-                        
-
 
 
                     }
