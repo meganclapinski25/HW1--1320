@@ -16,7 +16,7 @@
     </style>
   </head>
   <body>
-    <canvas id="myCanvas" width="480" height="320"></canvas>
+    <canvas id="myCanvas" width="800" height="600"></canvas>
 
     <script>
       const canvas = document.getElementById("myCanvas");
@@ -31,8 +31,8 @@
       let rightPressed = false;
       let leftPressed = false;
       let paddleX = (canvas.width- paddleWidth) / 2; 
-      const brickRowCount = 3;
-      const brickColumnCount = 5;
+      const brickRowCount = 5;
+      const brickColumnCount = 8;
       const brickWidth = 75;
         const brickHeight = 20;
         const brickPadding = 10;
@@ -128,11 +128,8 @@
                         bricks[c][r].x = brickX;
                         bricks[c][r].y = brickY;
                         
-                        if (r % 2 === 0){
-                            ctx.fillStyle = "black"
-                        }else{
-                            ctx.fillStyle = "white"
-                        }
+                        
+                        
                         
                         ctx.beginPath();
                         ctx.rect(brickX, brickY, brickWidth, brickHeight);
