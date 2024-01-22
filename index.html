@@ -41,8 +41,11 @@
         let score = 0;
         let lives = 3;
         var bricks = [];
+
+
         for (var c = 0; c < brickColumnCount; c++) {
             bricks[c] = [];
+            
             for (var r = 0; r < brickRowCount; r++) {
                 bricks[c][r] = { x: 0, y: 0, status: 1 };
             }
@@ -104,14 +107,15 @@
       function drawBall() {
         ctx.beginPath();
         ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-        ctx.fillStyle = "#0095DD";
+        
+        ctx.fillStyle = "#c99bd1";
         ctx.fill();
         ctx.closePath();
        }
        function drawPaddle() {
         ctx.beginPath();
         ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-        ctx.fillStyle = "#0095DD";
+        ctx.fillStyle = "#1a7011";
         ctx.fill();
         ctx.closePath();
        }
@@ -125,10 +129,16 @@
                         bricks[c][r].y = brickY;
                         ctx.beginPath();
                         ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                        ctx.fillStyle = "#0095DD";
+                        
                         ctx.fill();
                         ctx.closePath();
+
+                        
+
+
+
                     }
+                    
                 }
             }
         }
