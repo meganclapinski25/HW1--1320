@@ -1,5 +1,6 @@
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
+
 //constants   
       const ballRadius = 10;
       const paddleHeight = 10;
@@ -8,8 +9,9 @@ const ctx = canvas.getContext("2d");
       const brickColumnCount = 12;
       const brickWidth = 55;
       const brickHeight = 10;
-      
-       
+      const brickPadding = 10;
+      const brickOffsetLeft = 30;
+      const brickOffsetTop = 30;
 //variables
       
 
@@ -51,7 +53,6 @@ class Sprite {
     }
   }
 
-        export default Sprite
 
        
           class Ball extends Sprite {
@@ -78,22 +79,36 @@ class Sprite {
     
           
          class Brick extends Sprite{
-            constructor(x, y, width, height, color = 'fuchsia', status = 1){
+            constructor(x, y, width, height, color = 'purple', status = 1){
                 super(x,y,width,height,color);
                 this.status = status;
-            }
+                
+            }render(ctx){
+                ctx.beginPath();
+                ctx.rect(this.x, this.y, this.width, this.height);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.closePath();
+                }
          }
+        
+    
+
           
           
         
 
         class Paddle extends Sprite {
-            constructor(x, y, width = 75, height = 20, color = '#0095DD') {
+            constructor(x, y, width , height, color = 'purple') {
             super(x, y, width, height, color)
             
             
-        } render(ctx){
-            ctx.move(leftPressed, rightPressed, canvasWidth)
+        }  render(ctx) {
+            ctx.beginPath();
+            ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+            ctx.closePath();
         }
         
 
@@ -119,7 +134,7 @@ class Sprite {
             render(ctx){
                 ctx.font = this.font;
                 ctx.fillStyle = this.color
-                ctx.fillText(`Score: ${this.score}`);
+                ctx.fillText(`Score: ${this.score}`, this.x, this.y);
             }
             update(points){
                 this.score+=points;
@@ -136,7 +151,7 @@ class Sprite {
             }render(ctx){
                 ctx.font = this.font;
                 ctx.fillStyle = this.color;
-                ctx.fillText(`Lives: ${this.lives}`);
+                ctx.fillText(`Lives: ${this.lives}`,this.x, this.y);
             }loseLife(){
                 this.lives--;
             }reset(){
@@ -146,19 +161,23 @@ class Sprite {
         
           const ball = new Ball(100, 300, 10, 'orange');
           const paddle = new Paddle (100, 250, 10, 'orange');
-          const newBackground = new Background( 0, 0, canvas.width, canvas.height, 'white');
+          const newBackground = new Background( 0, 0, canvas.width, canvas.height, 'grey');
           const scoreLabel = new Score(10,30,'red');
           const livesLabel = new Lives(10,50,'red');
           const bricks = [];
-          for (let c = 0; c < brickColumnCount; c++) {
-            bricks[c] = [];
-            for (let r = 0; r < brickRowCount; r++) {
-                const brick = new Brick(0, 0, brickWidth, brickHeight, 'fuchsia');
-                brick.x = c * (brick.width + brickPadding) + brickOffsetLeft;
-                brick.y = r * (brick.height + brickPadding) + brickOffsetTop;
-                bricks[c][r] = brick;
+            for (let c = 0; c < brickColumnCount; c++) {
+                bricks[c] = [];
+                for (let r = 0; r < brickRowCount; r++) {
+                    const newBrick = new Brick(
+                        c * (brickWidth + brickPadding) + brickOffsetLeft,
+                         r * (brickHeight + brickPadding) + brickOffsetTop,
+                        brickWidth,
+                        brickHeight,
+                        'fuchsia'
+                    );
+                    bricks[c][r] = newBrick;
+                }
             }
-        }
 
 //functions
     function mouseMoveHandler(e){
@@ -188,20 +207,15 @@ class Sprite {
                 var b = bricks[c][r];
                 if (b.status == 1) {
                     if (ball.x > b.x && ball.x < b.x + brickWidth && ball.y > b.y && ball.y < b.y + brickHeight) {
-                        {
-                        dy = -dy;
+                        ball.dy = -ball.dy;
                         b.status = 0;
-                        score++;
-                        if(score === brickRowCount * brickColumnCount){
-                            alert("YOU WIN< CONGRATULATIONS!");
-                            document.location.reload();
-                        }
                     }
                 }
-            }   
+            }
         }
     }
-    }
+    
+    
     
 
     
@@ -221,39 +235,41 @@ class Sprite {
             newBackground.render(ctx);
             ball.move();
             ball.render(ctx);
-            paddle.move(canvas.width);
+            
             paddle.render(ctx);
+            
+            for (let c = 0; c < brickColumnCount; c++) {
+                for (let r = 0; r < brickRowCount; r++) {
+                    bricks[c][r].render(ctx);
+                }
+            }
             
             collisionDetection();
             scoreLabel.render(ctx);
             livesLabel.render(ctx);
-            
-            if(ball.x + ball.dx > canvas.width-ballRadius || ball.x + ball.dx < ballRadius) {
-               ball. dx = -ball.dx;
-            }
-            if(ball.y + ball.dy < ballRadius) {
-                ball.dy = -ball.dy;
-            }
-            else if(ball.y + ball.dy > canvas.height-ballRadius) {
-                if(ball.x > paddleX && ball.x < paddleX + paddleWidth) {
-                    ball.dy = -ball.dy;
-                }
-                else {
-                    lives--;
-                    if (!lives) {
-                    alert("GAME OVER");
-                    document.location.reload();
-                    } else {
-                    ball.reset();
-                    paddle.reset();
-                    } 
-                }
-            }
-            
-            
-            
-            
             requestAnimationFrame(draw);
+            
+            if (ball.x + ball.dx > canvas.width - ballRadius || ball.x + ball.dx < ballRadius) {
+        ball.dx = -ball.dx;
+    }
+    if (ball.y + ball.dy < ballRadius) {
+        ball.dy = -ball.dy;
+    } else if (ball.y + ball.dy > canvas.height - ballRadius) {
+        if (ball.x > paddleX && ball.x < paddleX + paddleWidth) {
+            ball.dy = -ball.dy;
+        } else {
+            lives--;
+            if (!lives) {
+                alert("GAME OVER");
+                document.location.reload();
+            }
+        }
+    }
+            
+            
+            
+            
+            
 
         }
         //event listeners
