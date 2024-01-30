@@ -8,9 +8,7 @@ const ctx = canvas.getContext("2d");
       const brickColumnCount = 12;
       const brickWidth = 55;
       const brickHeight = 10;
-      const brickPadding = 10;
-      const brickOffsetTop = 30;
-      const brickOffsetLeft = 30;
+      
        
 //variables
       
@@ -26,47 +24,50 @@ const ctx = canvas.getContext("2d");
       let lives = 3;
 
 //classes
-        class Sprite {
-            constructor(x = 0, y = 0, width = 100, height = 100, color = '#f00') {
-            this.x = x
-            this.y = y
-            this.width = width
-            this.height = height
-            this.color = color
-            }
-            render(ctx) {
-                ctx.beginPath();
-                ctx.rect(this.x, this.y, this.width, this.height);
-                ctx.fillStyle = this.color;
-                ctx.fill();
-                ctx.closePath();
-              }
-            
-        }
-        
+class Sprite {
+    constructor(x, y, width, height, color='red') {
+      this.x = x
+      this.y = y
+      this.width = width
+      this.height = height
+      this.color = color
+    }
+  
+    moveTo(x, y) {
+      this.x = x
+      this.y = y
+    }
+  
+    moveBy(dx, dy) {
+      this.x += dx
+      this.y += dy
+    }
+  
+    render(ctx) {
+      ctx.beginPath()
+      ctx.rect(this.x, this.y, this.width, this.height)
+      ctx.fillStyle = this.color
+      ctx.fill()
+    }
+  }
+
         export default Sprite
 
-        class Brick extends Sprite {
-            constructor(x, y, width = 75, height = 20, color = '#0095DD') {
-              super(x, y, width, height, color) // pass arguments to Sprite!
-              this.status = true // adds a new property
-            }
-          }
-        
-        class Ball extends Sprite {
-            constructor(x = 0, y = 0, radius = 10, color = "#0095DD") {
-              super(x, y, 0, 0, color)
+       
+          class Ball extends Sprite {
+            constructor(x, y, radius, color) {
+              super(x, y, radius * 2, radius * 2, color) // Must pass params to super when extending a class!
+          
               this.radius = radius;
               this.dx = 2
               this.dy = -2
             }
-          
-            move() {
-              this.x += this.dx
-              this.y += this.dy
+            move(){
+                this.x+=this.dx;
+                this.y +=this.dy;
             }
           
-            render(ctx) { // Overrides the existing render method!
+            render(ctx) {
               ctx.beginPath();
               ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
               ctx.fillStyle = this.color;
@@ -74,47 +75,88 @@ const ctx = canvas.getContext("2d");
               ctx.closePath();
             }
           }
-          const b = new Ball(200, 200, 10)
-          b.render(ctx)
+    
+          
+         class Brick extends Sprite{
+            constructor(x, y, width, height, color = 'fuchsia', status = 1){
+                super(x,y,width,height,color);
+                this.status = status;
+            }
+         }
+          
+          
         
 
         class Paddle extends Sprite {
             constructor(x, y, width = 75, height = 20, color = '#0095DD') {
             super(x, y, width, height, color)
+            
+            
+        } render(ctx){
+            ctx.move(leftPressed, rightPressed, canvasWidth)
         }
-        move(leftPressed, rightPressed, canvasWidth){
+        
 
-        }
+        
     }
 
         class Background extends Sprite{
             constructor(x, y, width, height, color = '#ffffff') {
             super(x, y, width, height, color)
+            }render(ctx){
+                ctx.fillStyle = this.color
+                ctx.fillRect(0,0,canvas.width, canvas.height);
             }
         }
-        class Score extends Sprite{
+        const background = new Background(0,0,500,500, 'white')
 
+        class Score extends Sprite{
+            constructor(x,y,color,font = "16px Helvetica", score = 0){
+                super(x,y,0,0,color);
+                this.font = font;
+                this.score = score;
+            }
+            render(ctx){
+                ctx.font = this.font;
+                ctx.fillStyle = this.color
+                ctx.fillText(`Score: ${this.score}`);
+            }
+            update(points){
+                this.score+=points;
+            }
+            reset(){
+                this.score = 0;
+            }
         }
         class Lives extends Sprite{
-
+            constructor(x, y, color, font = '16px Helvetica', lives = 3){
+                super(x,y,0,0,color);
+                this.font = font;
+                this.lives = lives;
+            }render(ctx){
+                ctx.font = this.font;
+                ctx.fillStyle = this.color;
+                ctx.fillText(`Lives: ${this.lives}`);
+            }loseLife(){
+                this.lives--;
+            }reset(){
+                this.lives = 3;
+            }
         }
-
-
-
-
-
-
-
-
-      
- //brick array     
-      var bricks = [];
-
-        for (var c = 0; c < brickColumnCount; c++) {
+        
+          const ball = new Ball(100, 300, 10, 'orange');
+          const paddle = new Paddle (100, 250, 10, 'orange');
+          const newBackground = new Background( 0, 0, canvas.width, canvas.height, 'white');
+          const scoreLabel = new Score(10,30,'red');
+          const livesLabel = new Lives(10,50,'red');
+          const bricks = [];
+          for (let c = 0; c < brickColumnCount; c++) {
             bricks[c] = [];
-            
-            for (var r = 0; r < brickRowCount; r++) {
-                bricks[c][r] = new Brick(0, 0);
+            for (let r = 0; r < brickRowCount; r++) {
+                const brick = new Brick(0, 0, brickWidth, brickHeight, 'fuchsia');
+                brick.x = c * (brick.width + brickPadding) + brickOffsetLeft;
+                brick.y = r * (brick.height + brickPadding) + brickOffsetTop;
+                bricks[c][r] = brick;
             }
         }
 
@@ -145,7 +187,8 @@ const ctx = canvas.getContext("2d");
             for (var r = 0; r < brickRowCount; r++) {
                 var b = bricks[c][r];
                 if (b.status == 1) {
-                    if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
+                    if (ball.x > b.x && ball.x < b.x + brickWidth && ball.y > b.y && ball.y < b.y + brickHeight) {
+                        {
                         dy = -dy;
                         b.status = 0;
                         score++;
@@ -158,6 +201,7 @@ const ctx = canvas.getContext("2d");
             }   
         }
     }
+    }
     
 
     
@@ -169,28 +213,30 @@ const ctx = canvas.getContext("2d");
        
     
 
-
+    
        
 //game function
        function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawBricks();
-            drawBall();
-            drawPaddle();
-            drawScore();
-            drawLives();
-            collisionDetection();
-
+            newBackground.render(ctx);
+            ball.move();
+            ball.render(ctx);
+            paddle.move(canvas.width);
+            paddle.render(ctx);
             
-            if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
-                dx = -dx;
+            collisionDetection();
+            scoreLabel.render(ctx);
+            livesLabel.render(ctx);
+            
+            if(ball.x + ball.dx > canvas.width-ballRadius || ball.x + ball.dx < ballRadius) {
+               ball. dx = -ball.dx;
             }
-            if(y + dy < ballRadius) {
-                dy = -dy;
+            if(ball.y + ball.dy < ballRadius) {
+                ball.dy = -ball.dy;
             }
-            else if(y + dy > canvas.height-ballRadius) {
-                if(x > paddleX && x < paddleX + paddleWidth) {
-                    dy = -dy;
+            else if(ball.y + ball.dy > canvas.height-ballRadius) {
+                if(ball.x > paddleX && ball.x < paddleX + paddleWidth) {
+                    ball.dy = -ball.dy;
                 }
                 else {
                     lives--;
@@ -198,24 +244,15 @@ const ctx = canvas.getContext("2d");
                     alert("GAME OVER");
                     document.location.reload();
                     } else {
-                    x = canvas.width / 2;
-                    y = canvas.height - 30;
-                    dx = 2;
-                    dy = -2;
-                    paddleX = (canvas.width - paddleWidth) / 2;
-} 
+                    ball.reset();
+                    paddle.reset();
+                    } 
                 }
             }
             
-            if(rightPressed && paddleX < canvas.width-paddleWidth) {
-                paddleX += 7;
-            }
-            else if(leftPressed && paddleX > 0) {
-                paddleX -= 7;
-            }
             
-            x += dx;
-            y += dy;
+            
+            
             requestAnimationFrame(draw);
 
         }
@@ -223,6 +260,5 @@ const ctx = canvas.getContext("2d");
         document.addEventListener("keydown", keyDownHandler, false);
         document.addEventListener("keyup", keyUpHandler, false);
         document.addEventListener("mousemove", mouseMoveHandler, false);
-    
-    
-    draw();
+
+        draw();
