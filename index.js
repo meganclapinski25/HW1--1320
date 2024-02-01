@@ -2,13 +2,16 @@ const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
 //constants   
+var x = canvas.width/2;
+var y = canvas.height-30;
+
       const ballRadius = 10;
       const paddleHeight = 10;
       const paddleWidth = 75;
-      const brickRowCount = 7;
-      const brickColumnCount = 12;
-      const brickWidth = 55;
-      const brickHeight = 10;
+      const brickRowCount =5;
+      const brickColumnCount = 8;
+      const brickWidth = 75;
+      const brickHeight = 20;
       const brickPadding = 10;
       const brickOffsetLeft = 30;
       const brickOffsetTop = 30;
@@ -125,37 +128,20 @@ class Sprite {
         }
         const background = new Background(0,0,500,500, 'white')
 
-        class Score extends Sprite{
-            constructor(x,y,color,font = "16px Helvetica", score = 0){
-                super(x,y,0,0,color);
+        class GameLabel extends Sprite{
+            constructor(text, x,y,color, font = "16px Arial"){
+                super(x,y,0,0,color)
+                this.text =text;
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.value = 0;
                 this.font = font;
-                this.score = score;
-            }
-            render(ctx){
-                ctx.font = this.font;
-                ctx.fillStyle = this.color
-                ctx.fillText(`Score: ${this.score}`, this.x, this.y);
-            }
-            update(points){
-                this.score+=points;
-            }
-            reset(){
-                this.score = 0;
-            }
-        }
-        class Lives extends Sprite{
-            constructor(x, y, color, font = '16px Helvetica', lives = 3){
-                super(x,y,0,0,color);
-                this.font = font;
-                this.lives = lives;
+
             }render(ctx){
                 ctx.font = this.font;
-                ctx.fillStyle = this.color;
-                ctx.fillText(`Lives: ${this.lives}`,this.x, this.y);
-            }loseLife(){
-                this.lives--;
-            }reset(){
-                this.lives = 3;
+                ctx.fillStyle = this.color
+                ctx.fillText(`${this.text} ${this.value}`, this.x, this.y);
             }
         }
         
