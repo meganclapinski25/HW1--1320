@@ -10,13 +10,13 @@ const canvas = document.getElementById("myCanvas");
       let rightPressed = false;
       let leftPressed = false;
       let paddleX = (canvas.width- paddleWidth) / 2; 
-      const brickRowCount = 10;
+      const brickRowCount = 3;
       const brickColumnCount = 5;
-      const brickWidth = 10;  // Adjust the width of the bricks
-const brickHeight = 10;  // Adjust the height of the bricks
-const brickPadding = 5;  // Adjust the padding between bricks
-const brickOffsetTop = 30;
-const brickOffsetLeft = 60;
+      const brickWidth = 80;  // Adjust the width of the bricks
+      const brickHeight = 20;  // Adjust the height of the bricks
+      const brickPadding = 5;  // Adjust the padding between bricks
+      const brickOffsetTop =30;
+      const brickOffsetLeft = 180;
         var score = 0;
         var lives = 3;
        
@@ -60,15 +60,7 @@ const brickOffsetLeft = 60;
             this.radius = radius;
             this.dx= dx; 
             this.dy = dy;
-        }moveTo(x, y) {
-            this.x = x
-            this.y = y
-          }
-        
-          moveBy(dx, dy) {
-            this.x += dx
-            this.y += dy
-          }
+        }
       
         render(ctx) {
           ctx.beginPath();
@@ -110,8 +102,8 @@ const brickOffsetLeft = 60;
               this.bricks[c] = [];
               for (let r = 0; r < this.rows; r += 1) {
                 const brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
-                const brickY= (r * (brickHeight + brickPadding)) + brickOffsetTop;
-                this.bricks[c][r] = new Brick(brickX, brickY, brickWidth,brickHeight);
+                const brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
+                this.bricks[c][r] = new Brick(brickX, brickY, brickWidth, brickHeight);
               }
           }
         }
@@ -181,7 +173,7 @@ const brickOffsetLeft = 60;
      const paddle = new Paddle();
 
      
-    const someBrick = new Brick(15, 30, 75, 20, 'fuchsia')
+    
     
     document.addEventListener("mousemove", mouseMoveHandler, false);
     function mouseMoveHandler(e){
@@ -206,6 +198,7 @@ const brickOffsetLeft = 60;
             }
     }
     function collisionDetection() {
+      
         for (let c = 0; c < bricks.cols; c+=1) {
             for (let r = 0; r < bricks.rows; r+=1) {
                 const brick = bricks.bricks[c][r];
@@ -215,11 +208,11 @@ const brickOffsetLeft = 60;
                         ball.y > brick.y && ball.y < brick.y + brickHeight) {
                         ball.dy = -ball.dy;
                         brick.status = 0;
-                
+
                         scoreLabel.value +=1
 
 
-                        if(scoreLabel.value === brick.rows * brick.cols){
+                        if(scoreLabel.value === brickRowCount * brickColumnCount){
                             alert("YOU WIN CONGRATULATIONS!");
                             document.location.reload();
                         }
@@ -257,7 +250,7 @@ const brickOffsetLeft = 60;
                 dx = -dx;
             }
             if (y + dy < ballRadius) {
-               dy = -ball.dy;
+               dy = -dy;
             }
             else if (y + dy > canvas.height - ballRadius) {
                 if (x > paddleX && x < paddleX + paddleWidth) {
@@ -272,6 +265,12 @@ const brickOffsetLeft = 60;
                     alert("GAME OVER");
                     document.location.reload();
                     clearInterval(interval); // Needed for Chrome to end game
+                }else{
+                  x = canvas.width / 2;
+                  y = canvas.height - 30;
+                  paddleX = (canvas.width - paddleWidth) / 2;
+                  dx = 2;
+                  dy = -2;
                 }
             }
         }
