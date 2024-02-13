@@ -20,124 +20,14 @@ const canvas = document.getElementById("myCanvas");
         var score = 0;
         var lives = 3;
        
-
        
-
-        
-    
-    
-    
-        
-    class Sprite {
-        constructor(x = 0, y = 0, width = 10, height = 10, color='red') {
-          this.x = x
-          this.y = y
-          this.width = width
-          this.height = height
-          this.color = color
-        }
-      
-        moveTo(x, y) {
-          this.x = x
-          this.y = y
-        }
-      
-        moveBy(dx, dy) {
-          this.x += dx
-          this.y += dy
-        }
-      
-        render(ctx) {
-          ctx.beginPath()
-          ctx.rect(this.x, this.y, this.width, this.height)
-          ctx.fillStyle = this.color
-          ctx.fill()
-        }
-      }
-      class Ball extends Sprite{
-        constructor( x = 0, y = 0, dx =2, dy = -1, radius = 10, color = 'red'){
-            super(x,y,radius *2, radius *2, color)
-            this.radius = radius;
-            this.dx= dx; 
-            this.dy = dy;
-        }
-      
-        render(ctx) {
-          ctx.beginPath();
-          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-          ctx.fillStyle = this.color;
-          ctx.fill();
-          ctx.closePath();
-        }
-     } 
      let ball = new Ball(0,0,2,-2,ballRadius, color = "orange");
 
-      class Brick extends Sprite {
-        constructor(x, y, width, height, color = 'purple', status = 1) {
-            super(x, y, width, height, color);
-            this.status = status;
-        }
-    
-        render(ctx) {
-            
-                ctx.beginPath();
-                ctx.rect(this.x, this.y, this.width, this.height);
-                ctx.fillStyle = "#1a7011";  // Set your desired brick color
-                ctx.fill();
-                ctx.closePath();
-            
-        }
-    }
-    
-    class Bricks {
-        constructor(cols, rows) {
-          this.rows = rows;
-          this.cols = cols;
-          this.bricks = [];
-          this.setup();
-        }
       
-        setup() {
-            for (let c = 0; c < this.cols; c += 1) {
-              this.bricks[c] = [];
-              for (let r = 0; r < this.rows; r += 1) {
-                const brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
-                const brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
-                this.bricks[c][r] = new Brick(brickX, brickY, brickWidth, brickHeight);
-              }
-          }
-        }
-      
-        render(ctx) {
-          for (let c = 0; c < this.cols; c += 1) {
-            for (let r = 0; r < this.rows; r += 1) {
-                const brick = this.bricks[c][r];
-              if (brick.status === 1) {
-                brick.render(ctx);
-              }
-            }
-          }
-        }
-      }
       
       const bricks = new Bricks(brickColumnCount, brickRowCount);
 
 
-      class GameLabel extends Sprite {
-        constructor(text, x, y, color = "black", font = "16px Arial") {
-          super(x, y, 0, 0, color);
-          this.text = text;
-          this.font = font;
-          this.value = 0;
-        }
-      
-      
-        render(ctx) {
-          ctx.font = this.font;
-          ctx.fillStyle = this.color;
-          ctx.fillText(`${this.text}: ${this.value}`, this.x, this.y);
-        }
-      }
       const scoreLabel = new GameLabel('Score ', 8, 20);
       const livesLabel = new GameLabel('Lives', canvas.width - 80, 20);
       livesLabel.value =3;
@@ -149,27 +39,7 @@ const canvas = document.getElementById("myCanvas");
 
      
 
-     class Paddle extends Sprite{
-        constructor(x, y, width , height, color = 'purple') {
-            super(x, y, width, height, color);
-            
-            
-        } moveTo(x, y) {
-            this.x = x
-            this.y = y
-          }
-        
-          moveBy(dx, dy) {
-            this.x += dx
-            this.y += dy
-          }render(ctx){
-            ctx.beginPath();
-            ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-            ctx.fillStyle = "#1a7011";
-            ctx.fill();
-            ctx.closePath();
-          }
-     }
+     
      const paddle = new Paddle();
 
      
