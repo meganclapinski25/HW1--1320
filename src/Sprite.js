@@ -23,4 +23,5 @@ class Sprite {
       ctx.fillStyle = this.color
       ctx.fill()
     }
-  }
+}
+export default Sprite;

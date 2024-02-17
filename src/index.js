@@ -1,3 +1,9 @@
+import Sprite from './Sprite';
+import Ball from './Ball';
+import Bricks from './Bricks';
+import GameLabel from './GameLabel';
+
+
 const canvas = document.getElementById("myCanvas");
       const ctx = canvas.getContext("2d");
       let x = canvas.width / 2;
@@ -9,7 +15,8 @@ const canvas = document.getElementById("myCanvas");
       const paddleWidth = 75;
       let rightPressed = false;
       let leftPressed = false;
-      let paddleX = (canvas.width- paddleWidth) / 2; 
+      let paddleXStart = (canvas.width- paddleWidth) / 2; 
+      const paddleYStart = (canvas.height - paddleHeight);
       const brickRowCount = 3;
       const brickColumnCount = 5;
       const brickWidth = 80;  // Adjust the width of the bricks
@@ -21,14 +28,23 @@ const canvas = document.getElementById("myCanvas");
         var lives = 3;
        
        
-     let ball = new Ball(0,0,2,-2,ballRadius, color = "orange");
+     let ball = new Ball(canvas.width / 2, canvas.height / 2, 2, -2, ballRadius, "orange");
+
 
       
       
-      const bricks = new Bricks(brickColumnCount, brickRowCount);
+     const bricks = new Bricks({
+        cols: brickColumnCount,
+        rows: brickRowCount,
+        width: brickWidth,
+        height: brickHeight,
+        padding: brickPadding,
+        offsetLeft: brickOffsetLeft,
+        offsetTop: brickOffsetTop
+      });
 
 
-      const scoreLabel = new GameLabel('Score ', 8, 20);
+      const scoreLabel = new GameLabel('Score ', 8, 20,  "blue");
       const livesLabel = new GameLabel('Lives', canvas.width - 80, 20);
       livesLabel.value =3;
 
@@ -40,16 +56,17 @@ const canvas = document.getElementById("myCanvas");
      
 
      
-     const paddle = new Paddle();
-
+     const paddle = new Sprite(paddleXStart, paddleYStart,paddleWidth, paddleHeight, "blue");
+     
      
     
-    
+     document.addEventListener("keydown", keyDownHandler, false);
+     document.addEventListener("keyup", keyUpHandler, false);
     document.addEventListener("mousemove", mouseMoveHandler, false);
     function mouseMoveHandler(e){
         const relativeX = e.clientX - canvas.offsetLeft;
         if (relativeX > 0 && relativeX < canvas.width){
-            paddleX = relativeX - paddleWidth/2;
+            paddleXStart = relativeX - paddleWidth/2;
         }
 
     }
@@ -92,7 +109,15 @@ const canvas = document.getElementById("myCanvas");
         }
     }
     
-       
+    function movePaddle() {
+        if (rightPressed && paddleXStart < canvas.width - paddle.width) {
+            paddleXStart += 7;
+        } else if (leftPressed && paddleXStart > 0) {
+            paddleXStart -= 7;
+        }
+        
+        paddle.x = paddleXStart;
+    }
        
 
     
@@ -101,10 +126,14 @@ const canvas = document.getElementById("myCanvas");
        function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             bricks.render(ctx);
-            
             ball.render(ctx);
-            ball.moveTo(x, y);
             paddle.render(ctx);
+            scoreLabel.render(ctx);
+            livesLabel.render(ctx);
+            ball.moveBy(dx, dy); 
+            
+            movePaddle();
+            
             collisionDetection();
             x+=dx;
             y+=dy;
@@ -116,15 +145,15 @@ const canvas = document.getElementById("myCanvas");
             
 
             
-            if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+            if (ball.x + dx > canvas.width - ballRadius || ball.x + dx < ballRadius) {
                 dx = -dx;
             }
-            if (y + dy < ballRadius) {
+            if (ball.y + dy < ballRadius) {
                dy = -dy;
             }
-            else if (y + dy > canvas.height - ballRadius) {
-                if (x > paddleX && x < paddleX + paddleWidth) {
-                    if (y > canvas.height - paddleHeight) {
+            else if (ball.y + dy > canvas.height - ballRadius) {
+                if (ball.x > paddleXStart && ball.x < paddleXStart + paddleWidth) {
+                    if (ball.y > canvas.height - paddleHeight) {
                         dy = -dy;
                         
                     }
@@ -138,18 +167,18 @@ const canvas = document.getElementById("myCanvas");
                 }else{
                   x = canvas.width / 2;
                   y = canvas.height - 30;
-                  paddleX = (canvas.width - paddleWidth) / 2;
+                  paddleXStart = (canvas.width - paddleWidth) / 2;
                   dx = 2;
                   dy = -2;
                 }
             }
         }
             
-            if(rightPressed && paddleX < canvas.width-paddleWidth) {
-                paddleX += 7;
+            if(rightPressed && paddleXStart < canvas.width-paddleWidth) {
+                paddleXStart += 7;
             }
-            else if(leftPressed && paddleX > 0) {
-                paddleX -= 7;
+            else if(leftPressed && paddleXStart > 0) {
+                paddleXStart -= 7;
             }
             
             

@@ -1,3 +1,5 @@
+import Sprite from './Sprite';
+
 class Brick extends Sprite {
     constructor(x, y, width, height, color = 'purple', status = 1) {
         super(x, y, width, height, color);
@@ -14,3 +16,4 @@ class Brick extends Sprite {
         
     }
 }
+export default Brick;
